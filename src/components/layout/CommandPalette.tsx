@@ -10,15 +10,13 @@ import {
   CommandSeparator,
 } from "@/components/ui/command";
 import {
+  BarChart3,
   DollarSign,
-  FileText,
   LayoutDashboard,
   Package,
-  Plus,
   Search,
   ShoppingCart,
   Users,
-  Warehouse,
 } from "lucide-react";
 
 interface CommandPaletteProps {
@@ -48,71 +46,46 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
 
   return (
     <CommandDialog open={open} onOpenChange={onOpenChange}>
-      <CommandInput placeholder="Digite um comando ou busque…" />
+      <CommandInput placeholder="Digite um comando ou busque" />
       <CommandList>
         <CommandEmpty>Nenhum resultado encontrado.</CommandEmpty>
 
-        <CommandGroup heading="Ações rápidas">
-          <CommandItem
-            onSelect={() => runCommand(() => navigate("/vendas/pedidos/novo"))}
-          >
-            <Plus className="mr-2 h-4 w-4" />
-            <span>Novo pedido</span>
+        <CommandGroup heading="Acoes rapidas">
+          <CommandItem onSelect={() => runCommand(() => navigate("/pdv/sell"))}>
+            <ShoppingCart className="mr-2 h-4 w-4" />
+            <span>Nova venda</span>
           </CommandItem>
-          <CommandItem
-            onSelect={() => runCommand(() => navigate("/estoque/produtos/novo"))}
-          >
-            <Package className="mr-2 h-4 w-4" />
-            <span>Novo produto</span>
+          <CommandItem onSelect={() => runCommand(() => navigate("/pdv/payment"))}>
+            <DollarSign className="mr-2 h-4 w-4" />
+            <span>Ir para pagamento</span>
           </CommandItem>
-          <CommandItem onSelect={() => runCommand(() => navigate("/clientes"))}>
-            <Users className="mr-2 h-4 w-4" />
-            <span>Buscar cliente</span>
-          </CommandItem>
-          <CommandItem
-            onSelect={() => runCommand(() => navigate("/estoque/produtos"))}
-          >
-            <Search className="mr-2 h-4 w-4" />
-            <span>Consultar produtos</span>
+          <CommandItem onSelect={() => runCommand(() => navigate("/pdv/open"))}>
+            <LayoutDashboard className="mr-2 h-4 w-4" />
+            <span>Abrir caixa</span>
           </CommandItem>
         </CommandGroup>
 
         <CommandSeparator />
 
-        <CommandGroup heading="Navegação">
-          <CommandItem onSelect={() => runCommand(() => navigate("/dashboard"))}>
-            <LayoutDashboard className="mr-2 h-4 w-4" />
-            <span>Dashboard</span>
+        <CommandGroup heading="Navegacao">
+          <CommandItem onSelect={() => runCommand(() => navigate("/products"))}>
+            <Package className="mr-2 h-4 w-4" />
+            <span>Produtos</span>
           </CommandItem>
-          <CommandItem
-            onSelect={() => runCommand(() => navigate("/vendas/pedidos"))}
-          >
-            <ShoppingCart className="mr-2 h-4 w-4" />
-            <span>Pedidos</span>
+          <CommandItem onSelect={() => runCommand(() => navigate("/customers"))}>
+            <Users className="mr-2 h-4 w-4" />
+            <span>Clientes</span>
           </CommandItem>
-          <CommandItem
-            onSelect={() => runCommand(() => navigate("/estoque/movimentacoes"))}
-          >
-            <Warehouse className="mr-2 h-4 w-4" />
-            <span>Movimentações</span>
+          <CommandItem onSelect={() => runCommand(() => navigate("/sales"))}>
+            <Search className="mr-2 h-4 w-4" />
+            <span>Vendas realizadas</span>
           </CommandItem>
-          <CommandItem
-            onSelect={() =>
-              runCommand(() => navigate("/financeiro/contas-a-receber"))
-            }
-          >
-            <DollarSign className="mr-2 h-4 w-4" />
-            <span>Contas a receber</span>
-          </CommandItem>
-          <CommandItem
-            onSelect={() => runCommand(() => navigate("/relatorios"))}
-          >
-            <FileText className="mr-2 h-4 w-4" />
-            <span>Relatórios</span>
+          <CommandItem onSelect={() => runCommand(() => navigate("/reports"))}>
+            <BarChart3 className="mr-2 h-4 w-4" />
+            <span>Relatorios</span>
           </CommandItem>
         </CommandGroup>
       </CommandList>
     </CommandDialog>
   );
 }
-

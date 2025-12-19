@@ -10,20 +10,15 @@ import { Fragment, useMemo } from "react";
 import { Link, useLocation } from "react-router-dom";
 
 const LABELS: Record<string, string> = {
-  dashboard: "Dashboard",
-  vendas: "Vendas",
-  pedidos: "Pedidos",
-  novo: "Novo",
-  estoque: "Estoque",
-  produtos: "Produtos",
-  movimentacoes: "Movimentações",
-  clientes: "Clientes",
-  fornecedores: "Fornecedores",
-  financeiro: "Financeiro",
-  "contas-a-receber": "Contas a receber",
-  "contas-a-pagar": "Contas a pagar",
-  relatorios: "Relatórios",
-  configuracoes: "Configurações",
+  pdv: "PDV",
+  open: "Abrir caixa",
+  sell: "Venda",
+  payment: "Pagamento",
+  close: "Fechar caixa",
+  products: "Produtos",
+  customers: "Clientes",
+  sales: "Vendas",
+  reports: "Relatorios",
 };
 
 function titleForSegment(segment: string) {
@@ -35,7 +30,7 @@ export function ERPBreadcrumbs() {
 
   const crumbs = useMemo(() => {
     const raw = location.pathname.split("/").filter(Boolean);
-    const segments = raw.length ? raw : ["dashboard"];
+    const segments = raw.length ? raw : ["pdv", "sell"];
 
     return segments.map((segment, index) => {
       const href = `/${segments.slice(0, index + 1).join("/")}`;
@@ -51,7 +46,7 @@ export function ERPBreadcrumbs() {
         <BreadcrumbList>
           <BreadcrumbItem>
             <BreadcrumbLink asChild>
-              <Link to="/dashboard">Vila Bella</Link>
+              <Link to="/pdv/sell">PDV</Link>
             </BreadcrumbLink>
           </BreadcrumbItem>
           {crumbs.map((crumb, index) => {

@@ -40,20 +40,20 @@ export function ERPTopbar() {
   const notifications = [
     {
       id: 1,
-      title: "Estoque crítico",
-      desc: "Rosas vermelhas abaixo do mínimo",
+      title: "Fiscal pendente",
+      desc: "2 NFC-e aguardando SEFAZ",
       type: "warning" as const,
     },
     {
       id: 2,
-      title: "Pedido pendente",
-      desc: "3 pedidos aguardando aprovação",
+      title: "Pagamento em aprovacao",
+      desc: "Operadora em analise",
       type: "info" as const,
     },
     {
       id: 3,
-      title: "Entrega atrasada",
-      desc: "Pedido VB-2024-003 em atraso",
+      title: "Pinpad offline",
+      desc: "Verifique conexao do TEF",
       type: "danger" as const,
     },
   ];
@@ -85,9 +85,9 @@ export function ERPTopbar() {
                   <Flower2 className="w-5 h-5 text-primary-foreground" />
                 </div>
                 <SheetTitle className="text-left">
-                  <span className="font-semibold">Vila Bella</span>
+                  <span className="font-semibold">ERP PDV</span>
                   <span className="block text-xs text-muted-foreground font-normal">
-                    ERP Floricultura
+                    Varejo fiscal
                   </span>
                 </SheetTitle>
               </SheetHeader>
@@ -99,7 +99,7 @@ export function ERPTopbar() {
             <div className="relative w-full">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
-                placeholder="Buscar pedidos, clientes, produtos… (Ctrl+K)"
+                placeholder="Buscar vendas, clientes, produtos (Ctrl+K)"
                 className="pl-9 pr-12 bg-muted/50 border-0 focus-visible:ring-1"
                 onClick={() => setShowCommand(true)}
                 readOnly
@@ -127,26 +127,26 @@ export function ERPTopbar() {
                 Hoje
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => setPeriod("7 dias")}>
-                Últimos 7 dias
+                Ultimos 7 dias
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => setPeriod("30 dias")}>
-                Últimos 30 dias
+                Ultimos 30 dias
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setPeriod("Este mês")}>
-                Este mês
+              <DropdownMenuItem onClick={() => setPeriod("Este mes")}>
+                Este mes
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
 
           <div className="hidden sm:flex items-center gap-2">
             <Button asChild className="gap-2">
-              <Link to="/vendas/pedidos/novo">
+              <Link to="/pdv/sell">
                 <Plus className="h-4 w-4" />
-                <span>Novo pedido</span>
+                <span>Nova venda</span>
               </Link>
             </Button>
             <Button asChild variant="outline" className="gap-2">
-              <Link to="/estoque/produtos/novo">
+              <Link to="/products">
                 <Plus className="h-4 w-4" />
                 <span>Novo produto</span>
               </Link>
@@ -164,7 +164,7 @@ export function ERPTopbar() {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-80">
               <div className="p-2 border-b">
-                <h4 className="font-semibold text-sm">Notificações</h4>
+                <h4 className="font-semibold text-sm">Notificacoes</h4>
               </div>
               {notifications.map((n) => (
                 <DropdownMenuItem
@@ -207,7 +207,7 @@ export function ERPTopbar() {
             <DropdownMenuContent align="end">
               <DropdownMenuItem>Perfil</DropdownMenuItem>
               <DropdownMenuItem asChild>
-                <Link to="/configuracoes">Configurações</Link>
+                <Link to="/reports">Relatorios</Link>
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem asChild>
@@ -218,9 +218,6 @@ export function ERPTopbar() {
                 >
                   Desenvolvido por MtsFerreira
                 </a>
-              </DropdownMenuItem>
-              <DropdownMenuItem className="text-destructive">
-                Sair
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>

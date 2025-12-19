@@ -2,12 +2,11 @@ import { Link, useLocation } from "react-router-dom";
 import {
   BarChart3,
   ChevronDown,
-  DollarSign,
   LayoutDashboard,
-  Settings,
   ShoppingCart,
   Users,
   Warehouse,
+  Wallet,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
@@ -26,38 +25,33 @@ interface NavItem {
 }
 
 const navItems: NavItem[] = [
-  { title: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
+  { title: "Home", href: "/pdv/sell", icon: LayoutDashboard },
+  {
+    title: "PDV",
+    icon: ShoppingCart,
+    children: [
+      { title: "Abrir caixa", href: "/pdv/open" },
+      { title: "Venda", href: "/pdv/sell" },
+      { title: "Pagamento", href: "/pdv/payment" },
+      { title: "Fechar caixa", href: "/pdv/close" },
+    ],
+  },
+  {
+    title: "Catalogo",
+    icon: Warehouse,
+    children: [{ title: "Produtos", href: "/products" }],
+  },
+  {
+    title: "Clientes",
+    icon: Users,
+    children: [{ title: "Clientes", href: "/customers" }],
+  },
   {
     title: "Vendas",
-    icon: ShoppingCart,
-    children: [{ title: "Pedidos", href: "/vendas/pedidos" }],
+    icon: Wallet,
+    children: [{ title: "Historico", href: "/sales" }],
   },
-  {
-    title: "Estoque",
-    icon: Warehouse,
-    children: [
-      { title: "Produtos", href: "/estoque/produtos" },
-      { title: "Movimentações", href: "/estoque/movimentacoes" },
-    ],
-  },
-  {
-    title: "Cadastros",
-    icon: Users,
-    children: [
-      { title: "Clientes", href: "/clientes" },
-      { title: "Fornecedores", href: "/fornecedores" },
-    ],
-  },
-  {
-    title: "Financeiro",
-    icon: DollarSign,
-    children: [
-      { title: "Contas a receber", href: "/financeiro/contas-a-receber" },
-      { title: "Contas a pagar", href: "/financeiro/contas-a-pagar" },
-    ],
-  },
-  { title: "Relatórios", href: "/relatorios", icon: BarChart3 },
-  { title: "Configurações", href: "/configuracoes", icon: Settings },
+  { title: "Relatorios", href: "/reports", icon: BarChart3 },
 ];
 
 export function ERPMobileNav() {
