@@ -14,7 +14,9 @@ export type Customer = {
   name: string;
   document?: string;
   email?: string;
-  phone?: string;
+  address?: string;
+  phone1?: string;
+  phone2?: string;
 };
 
 export type SaleStatus = "pending" | "paid" | "cancelled";

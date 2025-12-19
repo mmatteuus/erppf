@@ -17,7 +17,7 @@ interface PreferencesState {
 export const usePreferencesStore = create<PreferencesState>()(
   persist(
     (set) => ({
-      sidebarCollapsed: false,
+      sidebarCollapsed: true,
       tableDensity: "comfortable",
       lastGlobalSearch: "",
 
@@ -27,7 +27,6 @@ export const usePreferencesStore = create<PreferencesState>()(
       setTableDensity: (tableDensity) => set({ tableDensity }),
       setLastGlobalSearch: (lastGlobalSearch) => set({ lastGlobalSearch }),
     }),
-    { name: "erpvilabella-preferences-v1" },
+    { name: "provenca-preferences-v1" },
   ),
 );
-

@@ -30,6 +30,7 @@ export default function Products() {
   const [name, setName] = useState("");
   const [sku, setSku] = useState("");
   const [price, setPrice] = useState("");
+  const [stock, setStock] = useState("");
 
   const filtered = products.filter((product) => {
     const term = filter.toLowerCase();
@@ -41,13 +42,20 @@ export default function Products() {
 
   const handleCreate = async (event: React.FormEvent) => {
     event.preventDefault();
-    const numeric = Number.parseFloat(price || "0");
-    await productsApi.create({ name, sku, price: Number.isFinite(numeric) ? numeric : 0 });
+    const numericPrice = Number.parseFloat(price || "0");
+    const numericStock = Number.parseFloat(stock || "0");
+    await productsApi.create({
+      name,
+      sku,
+      price: Number.isFinite(numericPrice) ? numericPrice : 0,
+      stock: Number.isFinite(numericStock) ? numericStock : 0,
+    });
     toast({ title: "Produto cadastrado (stub)", description: "Conecte ao backend para persistir." });
     setOpen(false);
     setName("");
     setSku("");
     setPrice("");
+    setStock("");
     queryClient.invalidateQueries({ queryKey: ["products"] });
   };
 
@@ -86,6 +94,17 @@ export default function Products() {
                   onChange={(e) => setPrice(e.target.value)}
                 />
               </div>
+              <div className="space-y-2">
+                <Label htmlFor="stock">Estoque</Label>
+                <Input
+                  id="stock"
+                  type="number"
+                  step="1"
+                  min="0"
+                  value={stock}
+                  onChange={(e) => setStock(e.target.value)}
+                />
+              </div>
               <DialogFooter>
                 <Button type="submit">Salvar</Button>
               </DialogFooter>
@@ -116,7 +135,7 @@ export default function Products() {
                   <div>
                     <div className="font-medium">{product.name}</div>
                     <div className="text-xs text-muted-foreground">
-                      {product.sku || "Sem SKU"} · R$ {product.price.toFixed(2)}
+                      {product.sku || "Sem SKU"} | R$ {product.price.toFixed(2)}
                     </div>
                   </div>
                   <span className="text-sm text-muted-foreground">

@@ -28,24 +28,31 @@ export default function Customers() {
   const [open, setOpen] = useState(false);
   const [name, setName] = useState("");
   const [document, setDocument] = useState("");
-  const [phone, setPhone] = useState("");
+  const [email, setEmail] = useState("");
+  const [address, setAddress] = useState("");
+  const [phone1, setPhone1] = useState("");
+  const [phone2, setPhone2] = useState("");
 
   const filtered = customers.filter((customer) => {
     const term = filter.toLowerCase();
     return (
       customer.name.toLowerCase().includes(term) ||
-      (customer.document ? customer.document.includes(filter) : false)
+      (customer.document ? customer.document.includes(filter) : false) ||
+      (customer.email ? customer.email.toLowerCase().includes(term) : false)
     );
   });
 
   const handleCreate = async (event: React.FormEvent) => {
     event.preventDefault();
-    await customersApi.create({ name, document, phone });
+    await customersApi.create({ name, document, email, address, phone1, phone2 });
     toast({ title: "Cliente cadastrado (stub)", description: "Integre com API para persistir." });
     setOpen(false);
     setName("");
     setDocument("");
-    setPhone("");
+    setEmail("");
+    setAddress("");
+    setPhone1("");
+    setPhone2("");
     queryClient.invalidateQueries({ queryKey: ["customers"] });
   };
 
@@ -74,8 +81,20 @@ export default function Customers() {
                 <Input id="doc" value={document} onChange={(e) => setDocument(e.target.value)} />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="phone">Telefone</Label>
-                <Input id="phone" value={phone} onChange={(e) => setPhone(e.target.value)} />
+                <Label htmlFor="email">Email</Label>
+                <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="address">Endereco</Label>
+                <Input id="address" value={address} onChange={(e) => setAddress(e.target.value)} />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="phone1">Telefone 1</Label>
+                <Input id="phone1" value={phone1} onChange={(e) => setPhone1(e.target.value)} />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="phone2">Telefone 2</Label>
+                <Input id="phone2" value={phone2} onChange={(e) => setPhone2(e.target.value)} />
               </div>
               <DialogFooter>
                 <Button type="submit">Salvar</Button>
@@ -102,12 +121,25 @@ export default function Customers() {
               <p className="text-sm text-muted-foreground">Nenhum cliente encontrado.</p>
             ) : (
               filtered.map((customer) => (
-                <div key={customer.id} className="flex items-center justify-between border rounded-md px-2 py-2">
+                <div key={customer.id} className="flex items-center justify-between border rounded-md px-2 py-3 gap-2">
                   <div>
                     <div className="font-medium">{customer.name}</div>
                     <div className="text-xs text-muted-foreground">
-                      {customer.document || "Sem documento"} {customer.phone ? `· ${customer.phone}` : ""}
+                      {customer.document || "Sem documento"}
                     </div>
+                    {(customer.email || customer.phone1 || customer.phone2 || customer.address) && (
+                      <div className="text-xs text-muted-foreground space-y-0.5">
+                        {customer.email && <div>{customer.email}</div>}
+                        {(customer.phone1 || customer.phone2) && (
+                          <div>
+                            {customer.phone1 && <span>{customer.phone1}</span>}
+                            {customer.phone1 && customer.phone2 && <span> · </span>}
+                            {customer.phone2 && <span>{customer.phone2}</span>}
+                          </div>
+                        )}
+                        {customer.address && <div>{customer.address}</div>}
+                      </div>
+                    )}
                   </div>
                   <Button variant="ghost" size="sm">
                     Selecionar

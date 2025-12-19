@@ -5,7 +5,9 @@ export type CustomerInput = {
   name: string;
   document?: string;
   email?: string;
-  phone?: string;
+  address?: string;
+  phone1?: string;
+  phone2?: string;
 };
 
 export const customersApi = {
