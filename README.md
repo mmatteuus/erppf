@@ -1,6 +1,6 @@
-# Vila Bella ERP
+# Provenca Flores ERP
 
-ERP para floriculturas, com foco em vendas, estoque, compras, produção e financeiro.
+ERP para floriculturas, com foco em vendas, estoque, compras, producao e financeiro.
 
 ## Requisitos
 
@@ -16,8 +16,8 @@ npm run dev
 
 ## Scripts
 
-- `npm run build`: build de produção
-- `npm run preview`: prévia do build
+- `npm run build`: build de producao
+- `npm run preview`: previa do build
 - `npm run lint`: lint
 - `npm run format`: formatador
 - `npm run typecheck`: checagem de tipos
