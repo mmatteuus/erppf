@@ -6,38 +6,38 @@
 
 @layer base {
   :root {
-    /* Vila Bella ERP - Red/White Premium Theme */
+    /* Provenca Flores ERP - Lavender/Purple Theme */
     --background: 0 0% 100%;
-    --foreground: 222 47% 11%;
+    --foreground: 232 38% 12%;
 
     --card: 0 0% 100%;
-    --card-foreground: 222 47% 11%;
+    --card-foreground: 232 38% 12%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 222 47% 11%;
+    --popover-foreground: 232 38% 12%;
 
-    /* Primary Red - Brand Color */
-    --primary: 0 84% 60%;
+    /* Primary Lavender */
+    --primary: 262 60% 52%;
     --primary-foreground: 0 0% 100%;
 
-    /* Secondary - Light Gray */
-    --secondary: 210 40% 96%;
-    --secondary-foreground: 222 47% 11%;
+    /* Secondary - Soft lilac */
+    --secondary: 255 45% 95%;
+    --secondary-foreground: 232 38% 20%;
 
-    /* Muted - Subtle backgrounds */
-    --muted: 210 40% 96%;
-    --muted-foreground: 215 16% 47%;
+    /* Muted - Light neutral */
+    --muted: 230 25% 96%;
+    --muted-foreground: 232 20% 45%;
 
-    /* Accent - Soft red tint */
-    --accent: 0 70% 96%;
-    --accent-foreground: 0 84% 40%;
+    /* Accent - Pale purple */
+    --accent: 262 55% 92%;
+    --accent-foreground: 262 60% 35%;
 
-    /* Destructive - Darker red */
-    --destructive: 0 84% 45%;
+    /* Destructive - High contrast (red) */
+    --destructive: 0 72% 52%;
     --destructive-foreground: 0 0% 100%;
 
     /* Success */
-    --success: 142 76% 36%;
+    --success: 142 56% 35%;
     --success-foreground: 0 0% 100%;
 
     /* Warning */
@@ -45,30 +45,30 @@
     --warning-foreground: 0 0% 100%;
 
     /* Info */
-    --info: 199 89% 48%;
+    --info: 223 89% 56%;
     --info-foreground: 0 0% 100%;
 
-    --border: 214 32% 91%;
-    --input: 214 32% 91%;
-    --ring: 0 84% 60%;
+    --border: 250 30% 88%;
+    --input: 250 30% 88%;
+    --ring: 262 60% 52%;
 
     --radius: 0.5rem;
 
     /* Sidebar */
-    --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 222 47% 11%;
-    --sidebar-primary: 0 84% 60%;
+    --sidebar-background: 255 45% 97%;
+    --sidebar-foreground: 232 38% 12%;
+    --sidebar-primary: 262 60% 52%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 0 70% 96%;
-    --sidebar-accent-foreground: 0 84% 40%;
-    --sidebar-border: 214 32% 91%;
-    --sidebar-ring: 0 84% 60%;
+    --sidebar-accent: 262 55% 92%;
+    --sidebar-accent-foreground: 262 60% 35%;
+    --sidebar-border: 250 30% 88%;
+    --sidebar-ring: 262 60% 52%;
 
     /* Custom Shadows */
     --shadow-sm: 0 1px 2px 0 hsl(0 0% 0% / 0.05);
     --shadow-md: 0 4px 6px -1px hsl(0 0% 0% / 0.1), 0 2px 4px -2px hsl(0 0% 0% / 0.1);
     --shadow-lg: 0 10px 15px -3px hsl(0 0% 0% / 0.1), 0 4px 6px -4px hsl(0 0% 0% / 0.1);
-    --shadow-glow: 0 0 20px hsl(0 84% 60% / 0.15);
+    --shadow-glow: 0 0 20px hsl(262 60% 52% / 0.2);
   }
 
   .dark {
