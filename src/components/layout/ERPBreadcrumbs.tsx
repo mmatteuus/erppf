@@ -9,6 +9,7 @@ import {
 import { Fragment, useMemo } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { useAuthStore } from "@/store/auth";
 
 const LABELS: Record<string, string> = {
   pdv: "PDV",
@@ -28,6 +29,7 @@ function titleForSegment(segment: string) {
 
 export function ERPBreadcrumbs() {
   const location = useLocation();
+  const hasPermission = useAuthStore((s) => s.hasPermission);
 
   const crumbs = useMemo(() => {
     const raw = location.pathname.split("/").filter(Boolean);
@@ -72,19 +74,22 @@ export function ERPBreadcrumbs() {
           </BreadcrumbList>
         </Breadcrumb>
         <div className="flex flex-wrap gap-2">
-          <QuickLink href="/pdv/sell" label="PDV" />
-          <QuickLink href="/pdv/payment" label="Pagamento" />
-          <QuickLink href="/products" label="Produtos" />
-          <QuickLink href="/customers" label="Clientes" />
-          <QuickLink href="/sales" label="Vendas" />
-          <QuickLink href="/reports" label="Relatorios" />
+          <QuickLink href="/pdv/sell" label="PDV" visible />
+          <QuickLink href="/pdv/payment" label="Pagamento" visible={hasPermission("PDV_OPERATE")} />
+          <QuickLink href="/products" label="Produtos" visible={hasPermission("CATALOG_VIEW")} />
+          <QuickLink href="/customers" label="Clientes" visible={hasPermission("CATALOG_VIEW")} />
+          <QuickLink href="/sales" label="Vendas" visible={hasPermission("PDV_OPERATE")} />
+          <QuickLink href="/pricing" label="Precificacao" visible={hasPermission("PRICING_TOOL")} />
+          <QuickLink href="/reports" label="Relatorios" visible />
+          <QuickLink href="/chat" label="Chat" visible={hasPermission("CHAT_INTERNAL")} />
         </div>
       </div>
     </div>
   );
 }
 
-function QuickLink({ href, label }: { href: string; label: string }) {
+function QuickLink({ href, label, visible }: { href: string; label: string; visible?: boolean }) {
+  if (visible === false) return null;
   return (
     <Button asChild size="sm" variant="outline">
       <Link to={href}>{label}</Link>

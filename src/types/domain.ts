@@ -7,6 +7,19 @@ export type Product = {
   category?: string;
   stock?: number;
   imageUrl?: string;
+  cost?: number;
+  pricing?: {
+    dv?: number;
+    df?: number;
+    ml?: number;
+    lastSuggestedPrice?: number;
+  };
+  tax?: {
+    ncm?: string;
+    cest?: string;
+    origin?: number;
+    ibptCode?: string;
+  };
 };
 
 export type Customer = {

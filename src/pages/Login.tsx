@@ -5,6 +5,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
+import { useAuthStore, type Role } from "@/store/auth";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -12,6 +14,8 @@ export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [role, setRole] = useState<Role>("CAIXA");
+  const login = useAuthStore((s) => s.login);
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -19,7 +23,8 @@ export default function Login() {
     // Placeholder auth flow; backend OAuth/OIDC will replace this.
     setTimeout(() => {
       setLoading(false);
-      toast({ title: "Login", description: "Sessao iniciada (stub sem backend)." });
+      login({ email, role });
+      toast({ title: "Login", description: `Sessao iniciada como ${role}. (stub)` });
       navigate("/pdv/sell");
     }, 400);
   };
@@ -42,6 +47,20 @@ export default function Login() {
                 onChange={(e) => setEmail(e.target.value)}
                 required
               />
+            </div>
+            <div className="space-y-2">
+              <Label>Perfil (stub)</Label>
+              <Select value={role} onValueChange={(val) => setRole(val as Role)}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Selecione o perfil" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="ADMIN">Admin</SelectItem>
+                  <SelectItem value="GERENTE">Gerente</SelectItem>
+                  <SelectItem value="CAIXA">Caixa</SelectItem>
+                  <SelectItem value="VENDEDOR">Vendedor</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
             <div className="space-y-2">
               <Label htmlFor="password">Senha</Label>

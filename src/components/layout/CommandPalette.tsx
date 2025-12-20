@@ -17,7 +17,10 @@ import {
   Search,
   ShoppingCart,
   Users,
+  MessageSquare,
+  BadgeDollarSign,
 } from "lucide-react";
+import { useAuthStore } from "@/store/auth";
 
 interface CommandPaletteProps {
   open: boolean;
@@ -26,6 +29,7 @@ interface CommandPaletteProps {
 
 export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
   const navigate = useNavigate();
+  const hasPermission = useAuthStore((s) => s.hasPermission);
 
   useEffect(() => {
     const down = (e: KeyboardEvent) => {
@@ -84,6 +88,18 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
             <BarChart3 className="mr-2 h-4 w-4" />
             <span>Relatorios</span>
           </CommandItem>
+          {hasPermission("PRICING_TOOL") && (
+            <CommandItem onSelect={() => runCommand(() => navigate("/pricing"))}>
+              <BadgeDollarSign className="mr-2 h-4 w-4" />
+              <span>Precificacao</span>
+            </CommandItem>
+          )}
+          {hasPermission("CHAT_INTERNAL") && (
+            <CommandItem onSelect={() => runCommand(() => navigate("/chat"))}>
+              <MessageSquare className="mr-2 h-4 w-4" />
+              <span>Chat interno</span>
+            </CommandItem>
+          )}
         </CommandGroup>
       </CommandList>
     </CommandDialog>

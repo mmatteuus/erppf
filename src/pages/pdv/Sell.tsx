@@ -9,6 +9,7 @@ import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/components/ui/use-toast";
 import { usePDVStore } from "@/store/pdv";
 import type { CartItem } from "@/store/pdv";
+import { useAuthStore } from "@/store/auth";
 
 function calculateTotals(items: CartItem[]) {
   const subtotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
@@ -29,10 +30,15 @@ export default function Sell() {
     removeItem,
     updateQuantity,
     applyDiscount,
+    discountRequests,
+    requestDiscount,
+    approveDiscount,
     setCustomer,
     selectedCustomer,
     offline,
   } = usePDVStore();
+  const authUser = useAuthStore((s) => s.user);
+  const canApproveDiscount = useAuthStore((s) => s.hasPermission("DISCOUNT_APPROVE"));
 
   const [code, setCode] = useState("");
   const [name, setName] = useState("");
@@ -71,6 +77,22 @@ export default function Sell() {
       document: customerDoc,
     });
     toast({ title: "Cliente vinculado", description: customerName });
+  };
+
+  const handleRequestDiscount = (itemId: string) => {
+    const percentStr = window.prompt("Percentual de desconto solicitado (%)", "5");
+    if (!percentStr) return;
+    const percent = Number.parseFloat(percentStr);
+    if (!Number.isFinite(percent) || percent <= 0) {
+      toast({ title: "Valor invalido", variant: "destructive" });
+      return;
+    }
+    requestDiscount({
+      itemId,
+      percent,
+      requestedBy: authUser?.name || "operador",
+    });
+    toast({ title: "Solicitacao enviada", description: "Aguardando aprovacao do gerente." });
   };
 
   return (
@@ -185,14 +207,38 @@ export default function Sell() {
                         />
                       </div>
                       <div className="col-span-2 text-right">R$ {item.price.toFixed(2)}</div>
-                      <div className="col-span-2 text-right">
+                      <div className="col-span-2 text-right space-y-1">
                         <Input
                           type="number"
                           min="0"
                           value={item.discount ?? 0}
                           onChange={(e) => applyDiscount(item.id, Number(e.target.value))}
                           className="h-9 text-right"
+                          disabled={!canApproveDiscount}
                         />
+                        {!canApproveDiscount && (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleRequestDiscount(item.id)}
+                            className="w-full"
+                          >
+                            Solicitar desconto
+                          </Button>
+                        )}
+                        {canApproveDiscount &&
+                          discountRequests
+                            .filter((req) => req.itemId === item.id && req.status === "pending")
+                            .map((req) => (
+                              <div key={req.id} className="flex items-center justify-between gap-2 text-xs">
+                                <span>Pendente {req.percent}%</span>
+                                <div className="flex gap-1">
+                                  <Button size="sm" variant="outline" onClick={() => approveDiscount(req.id)}>
+                                    Aprovar
+                                  </Button>
+                                </div>
+                              </div>
+                            ))}
                       </div>
                       <div className="col-span-2 text-right font-semibold">
                         R$ {Math.max(subtotal, 0).toFixed(2)}

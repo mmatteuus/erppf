@@ -29,6 +29,14 @@ export type PendingSale = {
   status: "pending" | "failed";
 };
 
+export type DiscountRequest = {
+  id: string;
+  itemId: string;
+  requestedBy: string;
+  percent: number;
+  status: "pending" | "approved" | "rejected";
+};
+
 type PDVState = {
   cashStatus: CashStatus;
   cashOpeningAmount: number;
@@ -38,6 +46,7 @@ type PDVState = {
   payments: PaymentEntry[];
   pendingSales: PendingSale[];
   offline: boolean;
+  discountRequests: DiscountRequest[];
 
   openCash: (amount: number) => void;
   closeCash: () => void;
@@ -51,6 +60,9 @@ type PDVState = {
   setOffline: (flag: boolean) => void;
   enqueuePendingSale: (input: { saleUid: string; total: number }) => void;
   markPendingSale: (saleUid: string, status: PendingSale["status"]) => void;
+  requestDiscount: (input: { itemId: string; percent: number; requestedBy: string }) => void;
+  approveDiscount: (requestId: string) => void;
+  rejectDiscount: (requestId: string) => void;
 };
 
 function makeId(prefix: string) {
@@ -69,6 +81,7 @@ export const usePDVStore = create<PDVState>()(
       payments: [],
       pendingSales: [],
       offline: false,
+      discountRequests: [],
 
       openCash: (amount: number) =>
         set({
@@ -144,6 +157,36 @@ export const usePDVStore = create<PDVState>()(
             sale.saleUid === saleUid ? { ...sale, status } : sale,
           ),
         })),
+
+      requestDiscount: ({ itemId, percent, requestedBy }) =>
+        set((state) => ({
+          discountRequests: [
+            ...state.discountRequests,
+            { id: makeId("disc"), itemId, percent, requestedBy, status: "pending" },
+          ],
+        })),
+
+      approveDiscount: (requestId) =>
+        set((state) => {
+          const req = state.discountRequests.find((r) => r.id === requestId);
+          if (!req) return state;
+          return {
+            ...state,
+            cartItems: state.cartItems.map((item) =>
+              item.id === req.itemId ? { ...item, discount: req.percent } : item,
+            ),
+            discountRequests: state.discountRequests.map((r) =>
+              r.id === requestId ? { ...r, status: "approved" } : r,
+            ),
+          };
+        }),
+
+      rejectDiscount: (requestId) =>
+        set((state) => ({
+          discountRequests: state.discountRequests.map((r) =>
+            r.id === requestId ? { ...r, status: "rejected" } : r,
+          ),
+        })),
     }),
     {
       name: "pdv-store-v1",
@@ -156,6 +199,7 @@ export const usePDVStore = create<PDVState>()(
         payments: state.payments,
         pendingSales: state.pendingSales,
         offline: state.offline,
+        discountRequests: state.discountRequests,
       }),
     },
   ),

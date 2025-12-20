@@ -4,10 +4,12 @@ import {
   ChevronDown,
   Flower2,
   LayoutDashboard,
+  MessageSquare,
   ShoppingCart,
   Users,
   Warehouse,
   Wallet,
+  BadgeDollarSign,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
@@ -15,50 +17,62 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { usePreferencesStore } from "@/store/preferences";
+import { useAuthStore } from "@/store/auth";
+import type { Permission } from "@/store/auth";
 
 interface NavItem {
   title: string;
   href?: string;
   icon: React.ElementType;
-  children?: { title: string; href: string }[];
+  required?: Permission;
+  children?: { title: string; href: string; required?: Permission }[];
 }
 
 const navItems: NavItem[] = [
-  { title: "Home", href: "/pdv/sell", icon: LayoutDashboard },
+  { title: "Home", href: "/pdv/sell", icon: LayoutDashboard, required: "PDV_OPERATE" },
   {
     title: "PDV",
     icon: ShoppingCart,
+    required: "PDV_OPERATE",
     children: [
-      { title: "Abrir caixa", href: "/pdv/open" },
-      { title: "Venda", href: "/pdv/sell" },
-      { title: "Pagamento", href: "/pdv/payment" },
-      { title: "Fechar caixa", href: "/pdv/close" },
+      { title: "Abrir caixa", href: "/pdv/open", required: "CASH_OPEN_CLOSE" },
+      { title: "Venda", href: "/pdv/sell", required: "PDV_OPERATE" },
+      { title: "Pagamento", href: "/pdv/payment", required: "PDV_OPERATE" },
+      { title: "Fechar caixa", href: "/pdv/close", required: "CASH_OPEN_CLOSE" },
     ],
   },
   {
     title: "Catalogo",
     icon: Warehouse,
-    children: [{ title: "Produtos", href: "/products" }],
+    required: "CATALOG_VIEW",
+    children: [
+      { title: "Produtos", href: "/products", required: "CATALOG_VIEW" },
+      { title: "Precificacao", href: "/pricing", required: "PRICING_TOOL", icon: BadgeDollarSign },
+    ],
   },
   {
     title: "Clientes",
     icon: Users,
-    children: [{ title: "Clientes", href: "/customers" }],
+    required: "CATALOG_VIEW",
+    children: [{ title: "Clientes", href: "/customers", required: "CATALOG_VIEW" }],
   },
   {
     title: "Vendas",
     icon: Wallet,
-    children: [{ title: "Historico", href: "/sales" }],
+    required: "PDV_OPERATE",
+    children: [{ title: "Historico", href: "/sales", required: "PDV_OPERATE" }],
   },
   { title: "Relatorios", href: "/reports", icon: BarChart3 },
+  { title: "Chat", href: "/chat", icon: MessageSquare, required: "CHAT_INTERNAL" },
 ];
 
 export function ERPSidebar() {
   const { sidebarCollapsed } = usePreferencesStore();
   const location = useLocation();
-  const [openItems, setOpenItems] = useState<string[]>(["PDV", "Catalogo", "Clientes", "Vendas"]);
+  const [openItems, setOpenItems] = useState<string[]>([]);
+  const { user, hasPermission } = useAuthStore();
 
   if (sidebarCollapsed) return null;
 
@@ -71,6 +85,18 @@ export function ERPSidebar() {
   const isActive = (href: string) => location.pathname === href;
   const isParentActive = (children?: { href: string }[]) =>
     children?.some((child) => location.pathname.startsWith(child.href));
+
+  const visibleNav = useMemo(
+    () =>
+      navItems
+        .filter((item) => !item.required || hasPermission(item.required))
+        .map((item) => ({
+          ...item,
+          children: item.children?.filter((child) => !child.required || hasPermission(child.required)),
+        }))
+        .filter((item) => !item.children || item.children.length > 0),
+    [hasPermission],
+  );
 
   return (
     <aside className="hidden lg:flex lg:flex-col w-64 border-r bg-sidebar h-screen sticky top-0">
@@ -86,7 +112,7 @@ export function ERPSidebar() {
 
       <nav className="flex-1 overflow-y-auto py-4 px-3 scrollbar-thin">
         <ul className="space-y-1">
-          {navItems.map((item) => (
+          {visibleNav.map((item) => (
             <li key={item.title}>
               {item.children ? (
                 <Collapsible
@@ -147,15 +173,21 @@ export function ERPSidebar() {
       </nav>
 
       <div className="border-t p-4">
-        <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
-            <span className="text-sm font-medium text-primary">A</span>
+        {user ? (
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+              <span className="text-sm font-medium text-primary">
+                {user.name.slice(0, 1).toUpperCase()}
+              </span>
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-medium truncate">{user.name}</p>
+              <p className="text-xs text-muted-foreground">{user.role}</p>
+            </div>
           </div>
-          <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium truncate">Admin</p>
-            <p className="text-xs text-muted-foreground">Operador</p>
-          </div>
-        </div>
+        ) : (
+          <p className="text-xs text-muted-foreground">Nao autenticado</p>
+        )}
         <span className="mt-3 block text-xs font-medium text-primary">
           PDV seguro - LGPD ready
         </span>

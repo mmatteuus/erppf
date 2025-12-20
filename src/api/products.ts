@@ -8,6 +8,19 @@ export type ProductInput = {
   family?: string;
   category?: string;
   stock?: number;
+  cost?: number;
+  pricing?: {
+    dv?: number;
+    df?: number;
+    ml?: number;
+    lastSuggestedPrice?: number;
+  };
+  tax?: {
+    ncm?: string;
+    cest?: string;
+    origin?: number;
+    ibptCode?: string;
+  };
 };
 
 export const productsApi = {
