@@ -1,79 +1,45 @@
-const API_BASE = "/api";
+import { mockDb } from "@/lib/mockDb";
 
-type HttpMethod = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
+type HttpMethod = "GET" | "POST" | "PATCH";
 
-type RequestOptions = {
-  body?: unknown;
-  signal?: AbortSignal;
-  headers?: Record<string, string>;
+export const apiMode = {
+  mode: "mock" as const,
 };
 
-async function request<T>(
+export async function request<T>(
   path: string,
   method: HttpMethod,
-  options: RequestOptions = {},
+  body?: unknown,
 ): Promise<T> {
-  const url = `${API_BASE}${path}`;
-  const response = await fetch(url, {
-    method,
-    signal: options.signal,
-    headers: {
-      "Content-Type": "application/json",
-      ...(options.headers ?? {}),
-    },
-    body: options.body ? JSON.stringify(options.body) : undefined,
-  });
-
-  if (!response.ok) {
-    const message = await safeErrorMessage(response);
-    throw new Error(message);
+  // Simple router to mockDb
+  if (path.startsWith("/products")) {
+    if (method === "GET") return mockDb.listProducts() as unknown as T;
+    if (method === "POST") return mockDb.createProduct(body as any) as unknown as T;
+    if (method === "PATCH") {
+      const [, , id] = path.split("/");
+      return mockDb.updateProduct(id, body as any) as unknown as T;
+    }
   }
-
-  if (response.status === 204) {
-    // No content
-    return undefined as T;
+  if (path.startsWith("/customers")) {
+    if (method === "GET") return mockDb.listCustomers() as unknown as T;
+    if (method === "POST") return mockDb.createCustomer(body as any) as unknown as T;
   }
-
-  return (await response.json()) as T;
+  if (path.startsWith("/sales")) {
+    if (method === "GET") return mockDb.listSales() as unknown as T;
+    if (method === "POST") return mockDb.createSale(body as any) as unknown as T;
+    if (method === "PATCH") {
+      const [, , id] = path.split("/");
+      return mockDb.updateSale(id, body as any) as unknown as T;
+    }
+  }
+  if (path.startsWith("/cash/status")) {
+    return mockDb.cashStatus() as unknown as T;
+  }
+  if (path.startsWith("/cash/open")) {
+    return mockDb.openCash(body as any) as unknown as T;
+  }
+  if (path.startsWith("/cash/close")) {
+    return mockDb.closeCash() as unknown as T;
+  }
+  throw new Error(`Mock API path not handled: ${method} ${path}`);
 }
-
-async function safeErrorMessage(response: Response) {
-  try {
-    const json = await response.json();
-    if (json?.message) return json.message as string;
-  } catch {
-    // ignore
-  }
-  return `API error ${response.status}`;
-}
-
-/**
- * Wrapper that falls back to a provided value when the backend is offline.
- * This keeps the front navegável mesmo sem API pronta.
- */
-export async function apiCall<T>(
-  path: string,
-  method: HttpMethod,
-  fallback: T,
-  options: RequestOptions = {},
-): Promise<T> {
-  try {
-    return await request<T>(path, method, options);
-  } catch (error) {
-    console.warn(`[api stub] ${method} ${path} falhou, usando fallback`, error);
-    return fallback;
-  }
-}
-
-export const http = {
-  get: <T>(path: string, fallback: T, options?: RequestOptions) =>
-    apiCall<T>(path, "GET", fallback, options),
-  post: <T>(path: string, body: unknown, fallback: T, options?: RequestOptions) =>
-    apiCall<T>(path, "POST", fallback, { ...options, body }),
-  put: <T>(path: string, body: unknown, fallback: T, options?: RequestOptions) =>
-    apiCall<T>(path, "PUT", fallback, { ...options, body }),
-  patch: <T>(path: string, body: unknown, fallback: T, options?: RequestOptions) =>
-    apiCall<T>(path, "PATCH", fallback, { ...options, body }),
-  delete: <T>(path: string, fallback: T, options?: RequestOptions) =>
-    apiCall<T>(path, "DELETE", fallback, options),
-};

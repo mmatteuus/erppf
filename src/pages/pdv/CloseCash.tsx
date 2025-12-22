@@ -7,10 +7,12 @@ import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/components/ui/use-toast";
 import { usePDVStore } from "@/store/pdv";
+import { useAuthStore } from "@/store/auth";
 
 export default function CloseCash() {
   const { toast } = useToast();
   const { cashStatus, cashOpeningAmount, payments, pendingSales, closeCash } = usePDVStore();
+  const user = useAuthStore((s) => s.user);
   const [cashCount, setCashCount] = useState("");
   const [notes, setNotes] = useState("");
   const [loading, setLoading] = useState(false);
@@ -18,6 +20,10 @@ export default function CloseCash() {
   const totals = useMemo(() => {
     const received = payments.reduce((sum, p) => sum + p.amount, 0);
     const pending = pendingSales.filter((s) => s.status === "pending").length;
+    const byMethod = payments.reduce<Record<string, number>>((acc, p) => {
+      acc[p.method] = (acc[p.method] || 0) + p.amount;
+      return acc;
+    }, {});
     return { received, pending };
   }, [payments, pendingSales]);
 
@@ -85,6 +91,10 @@ export default function CloseCash() {
             <span className="font-semibold">R$ {cashOpeningAmount.toFixed(2)}</span>
           </div>
           <div className="flex items-center justify-between">
+            <span>Operador</span>
+            <span className="font-semibold">{user?.name || "—"}</span>
+          </div>
+          <div className="flex items-center justify-between">
             <span>Recebido (pagamentos)</span>
             <span className="font-semibold">R$ {totals.received.toFixed(2)}</span>
           </div>
@@ -93,9 +103,32 @@ export default function CloseCash() {
             <span className="font-semibold">{totals.pending}</span>
           </div>
           <Separator />
+          <div className="space-y-1 text-sm">
+            <p className="font-semibold">Por meio de pagamento</p>
+            {Object.entries(
+              payments.reduce<Record<string, number>>((acc, p) => {
+                acc[p.method] = (acc[p.method] || 0) + p.amount;
+                return acc;
+              }, {}),
+            ).map(([method, total]) => (
+              <div key={method} className="flex justify-between">
+                <span className="text-muted-foreground capitalize">{method}</span>
+                <span className="font-semibold">R$ {total.toFixed(2)}</span>
+              </div>
+            ))}
+          </div>
+          <Separator />
           <p className="text-sm text-muted-foreground">
             Concilie valores e finalize para enviar a confrencia ao financeiro.
           </p>
+          <div className="flex gap-2">
+            <Button variant="outline" size="sm">
+              Imprimir fechamento
+            </Button>
+            <Button variant="outline" size="sm">
+              Registrar sangria/suprimento
+            </Button>
+          </div>
         </CardContent>
       </Card>
     </div>

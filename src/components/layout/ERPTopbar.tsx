@@ -10,6 +10,7 @@ import {
   PanelLeft,
   Plus,
   Search,
+  Wifi,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -31,11 +32,13 @@ import {
 import { CommandPalette } from "./CommandPalette";
 import { ERPMobileNav } from "./ERPMobileNav";
 import { usePreferencesStore } from "@/store/preferences";
+import { useAuthStore } from "@/store/auth";
 
 export function ERPTopbar() {
   const [showCommand, setShowCommand] = useState(false);
   const [period, setPeriod] = useState("Hoje");
   const { sidebarCollapsed, toggleSidebarCollapsed } = usePreferencesStore();
+  const { user, logout } = useAuthStore();
 
   const notifications = [
     {
@@ -108,6 +111,13 @@ export function ERPTopbar() {
                 <Command className="h-3 w-3" />K
               </kbd>
             </div>
+          </div>
+
+          <div className="hidden md:flex items-center gap-2">
+            <Badge variant="outline" className="flex items-center gap-1">
+              <Wifi className="h-3 w-3" />
+              Mock online
+            </Badge>
           </div>
 
           <DropdownMenu>
@@ -200,25 +210,21 @@ export function ERPTopbar() {
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" size="icon" className="rounded-full">
                 <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
-                  <span className="text-sm font-medium text-primary">A</span>
+                  <span className="text-sm font-medium text-primary">
+                    {user?.name ? user.name.slice(0, 1).toUpperCase() : "A"}
+                  </span>
                 </div>
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuItem>Perfil</DropdownMenuItem>
+              <DropdownMenuItem>
+                {user ? `${user.name} (${user.role})` : "Nao autenticado"}
+              </DropdownMenuItem>
               <DropdownMenuItem asChild>
                 <Link to="/reports">Relatorios</Link>
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem asChild>
-                <a
-                  href="https://mtsferreira.dev"
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  Desenvolvido por MtsFerreira
-                </a>
-              </DropdownMenuItem>
+              <DropdownMenuItem onClick={logout}>Sair</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>

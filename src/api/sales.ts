@@ -22,15 +22,7 @@ export type PaymentInput = {
 };
 
 export const salesApi = {
-  list: (params?: { from?: string; to?: string; status?: Sale["status"] }) => {
-    const query = new URLSearchParams();
-    if (params?.from) query.set("from", params.from);
-    if (params?.to) query.set("to", params.to);
-    if (params?.status) query.set("status", params.status);
-    const qs = query.toString();
-    const path = qs ? `/sales?${qs}` : "/sales";
-    return http.get<Sale[]>(path, []);
-  },
+  list: () => http.get<Sale[]>("/sales", []),
   create: (input: NewSaleInput) => http.post<Sale | null>("/sales", input, null),
   payment: (input: PaymentInput) =>
     http.post<PaymentIntent | null>("/payments", input, null),

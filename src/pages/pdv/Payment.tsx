@@ -10,6 +10,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { usePDVStore } from "@/store/pdv";
 import type { CartItem } from "@/store/pdv";
 import type { PaymentMethod } from "@/types/domain";
+import { useAuthStore } from "@/store/auth";
 
 function calculateTotals(items: CartItem[]) {
   const subtotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
@@ -32,6 +33,7 @@ export default function Payment() {
     enqueuePendingSale,
     cashStatus,
   } = usePDVStore();
+  const user = useAuthStore((s) => s.user);
 
   const [method, setMethod] = useState<PaymentMethod>("cash");
   const [amount, setAmount] = useState("");
@@ -181,6 +183,52 @@ export default function Payment() {
             </Button>
             <Button onClick={handleFinish} disabled={loading || cartItems.length === 0}>
               {loading ? "Enviando..." : "Finalizar e emitir"}
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Comprovante / DANFCE (preview)</CardTitle>
+          <CardDescription>Mock para demonstração</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-2 text-sm">
+          <div className="flex justify-between">
+            <span>Operador</span>
+            <span className="font-medium">{user?.name || "—"}</span>
+          </div>
+          <div className="flex justify-between">
+            <span>Total</span>
+            <span className="font-semibold">R$ {totals.total.toFixed(2)}</span>
+          </div>
+          <div className="flex justify-between">
+            <span>Pago</span>
+            <span className="font-semibold">R$ {paid.toFixed(2)}</span>
+          </div>
+          <div className="flex justify-between">
+            <span>Troco</span>
+            <span className="font-semibold">
+              R$ {Math.max(paid - totals.total, 0).toFixed(2)}
+            </span>
+          </div>
+          <div className="space-y-1">
+            <p className="text-xs text-muted-foreground">Itens</p>
+            {cartItems.map((i) => (
+              <div key={i.id} className="flex justify-between">
+                <span>
+                  {i.name} x{i.quantity}
+                </span>
+                <span>R$ {(i.price * i.quantity - (i.discount ?? 0) * i.quantity).toFixed(2)}</span>
+              </div>
+            ))}
+          </div>
+          <div className="flex gap-2">
+            <Button variant="outline" size="sm">
+              Imprimir
+            </Button>
+            <Button variant="outline" size="sm">
+              Salvar PDF
             </Button>
           </div>
         </CardContent>

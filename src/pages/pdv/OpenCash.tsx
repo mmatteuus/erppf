@@ -6,10 +6,12 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
 import { usePDVStore } from "@/store/pdv";
+import { useAuthStore } from "@/store/auth";
 
 export default function OpenCash() {
   const { toast } = useToast();
   const { cashStatus, cashOpeningAmount, openCash, cashOpenedAt } = usePDVStore();
+  const user = useAuthStore((s) => s.user);
   const [amount, setAmount] = useState(cashOpeningAmount ? cashOpeningAmount.toString() : "");
   const [loading, setLoading] = useState(false);
 
@@ -19,9 +21,12 @@ export default function OpenCash() {
     if (Number.isNaN(numeric)) return;
     setLoading(true);
     try {
-      await cashApi.open({ openingAmount: numeric, operator: "operador" });
+      await cashApi.open({ openingAmount: numeric, operator: user?.name || "operador" });
       openCash(numeric);
-      toast({ title: "Caixa aberto", description: `Valor inicial R$ ${numeric.toFixed(2)}` });
+      toast({
+        title: "Caixa aberto",
+        description: `Operador: ${user?.name || "operador"} | Valor inicial R$ ${numeric.toFixed(2)}`,
+      });
     } finally {
       setLoading(false);
     }

@@ -15,6 +15,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
 import type { Customer } from "@/types/domain";
+import { usePDVStore } from "@/store/pdv";
 
 export default function Customers() {
   const { toast } = useToast();
@@ -23,6 +24,7 @@ export default function Customers() {
     queryKey: ["customers"],
     queryFn: customersApi.list,
   });
+  const setCustomer = usePDVStore((s) => s.setCustomer);
 
   const [filter, setFilter] = useState("");
   const [open, setOpen] = useState(false);
@@ -91,11 +93,11 @@ export default function Customers() {
               <div className="space-y-2">
                 <Label htmlFor="phone1">Telefone 1</Label>
                 <Input id="phone1" value={phone1} onChange={(e) => setPhone1(e.target.value)} />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="phone2">Telefone 2</Label>
-                <Input id="phone2" value={phone2} onChange={(e) => setPhone2(e.target.value)} />
-              </div>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="phone2">Telefone 2</Label>
+                  <Input id="phone2" value={phone2} onChange={(e) => setPhone2(e.target.value)} />
+                </div>
               <DialogFooter>
                 <Button type="submit">Salvar</Button>
               </DialogFooter>
@@ -141,8 +143,15 @@ export default function Customers() {
                       </div>
                     )}
                   </div>
-                  <Button variant="ghost" size="sm">
-                    Selecionar
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => {
+                      setCustomer(customer);
+                      toast({ title: "Cliente enviado ao PDV", description: customer.name });
+                    }}
+                  >
+                    Usar no PDV
                   </Button>
                 </div>
               ))

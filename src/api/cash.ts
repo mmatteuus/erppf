@@ -5,6 +5,7 @@ export type CashStatusResponse = {
   openedAt?: string;
   openingAmount?: number;
   operator?: string;
+  entries?: Array<{ method: PaymentIntentMethod; amount: number }>;
 };
 
 export type OpenCashInput = {
@@ -16,6 +17,8 @@ export type CloseCashInput = {
   cashCount: number;
   notes?: string;
 };
+
+type PaymentIntentMethod = "cash" | "card" | "pix";
 
 export const cashApi = {
   status: () => http.get<CashStatusResponse>("/cash/status", { status: "closed" }),
